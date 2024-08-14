@@ -128,7 +128,7 @@ class _LoginState extends State<LoginPage> {
                       ),
                   ),
 
-                  Button(text: 'Connexion', onTap: () {  },)
+                  Button(text: 'Connexion', onTap: () { Navigator.pushNamed(context, '/welcomeUser'); },)
                 ],
               )
           )

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projet_plante/Welcome/welcome_slide.dart';
+import 'package:projet_plante/user/accueil.dart';
+import 'package:projet_plante/user/infos_plante.dart';
 import 'package:projet_plante/user/inscription.dart';
 import 'package:projet_plante/user/login.dart';
 
@@ -73,6 +75,31 @@ class RouteGenerator {
               return FadeTransition(opacity: animation, child: child);
             }
         );
+
+
+      case '/welcomeUser':
+        return PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 500),
+            pageBuilder:(context, animation, secondAnimation)=>const Welcome(),
+            transitionsBuilder: (context, animation, secondAnimation,child) {
+              var begin=const Offset(1.0, 0.0);
+              var end=const Offset(0.0, 0.0);
+              var tween=Tween(begin: begin,end:end);
+              return  SlideTransition(position: animation.drive((tween)),child: child);
+            });
+
+      case '/infoTree':
+        return PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 500),
+            pageBuilder:(context, animation, secondAnimation)=> DetailTree(tree: settings.arguments as Map),
+            transitionsBuilder: (context, animation, secondAnimation,child) {
+              var begin=const Offset(1.0, 0.0);
+              var end=const Offset(0.0, 0.0);
+              var tween=Tween(begin: begin,end:end);
+              return  SlideTransition(position: animation.drive((tween)),child: child);
+            });
+
+
 
     }
     return null;
