@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:projet_plante/Welcome/welcome_slide.dart';
-import 'package:projet_plante/user/accueil.dart';
 import 'package:projet_plante/user/infos_plante.dart';
 import 'package:projet_plante/user/inscription.dart';
 import 'package:projet_plante/user/login.dart';
+import 'package:projet_plante/user/user_silde_widgets.dart';
 
 import 'Welcome/welcome_page.dart';
 
@@ -80,7 +80,7 @@ class RouteGenerator {
       case '/welcomeUser':
         return PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 500),
-            pageBuilder:(context, animation, secondAnimation)=>const Welcome(),
+            pageBuilder:(context, animation, secondAnimation)=> UserSlideWidgets(),
             transitionsBuilder: (context, animation, secondAnimation,child) {
               var begin=const Offset(1.0, 0.0);
               var end=const Offset(0.0, 0.0);

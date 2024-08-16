@@ -14,17 +14,24 @@ List<String> listRoutes = [];
 
 TextStyle textWelcome = const TextStyle(
     fontWeight: FontWeight.bold,
-    fontSize: 25,
+    fontSize: 20,
     color: Colors.white,
-    letterSpacing: 2
+);
+
+TextStyle textLogin = const TextStyle(
+  color: Colors.white,
+  fontSize: 30,
+  wordSpacing: 5,
+  fontWeight: FontWeight.bold,
 );
 
 Color colorApp = const Color(0xFF115E2B);
+
 List<Color> listColor = [const Color(0xFF74B72F), const Color(0xFF12642E)];
+
 TextStyle textWelcomeUnder = TextStyle(
     fontWeight: FontWeight.bold,
-    fontSize: 17,
-    letterSpacing: 2,
+    fontSize: 15,
     color: Colors.white.withOpacity(0.7)
 );
 
@@ -33,6 +40,7 @@ class CounterPage {
   int value;
   CounterPage(this.value);
 }
+
 
 List<List> groupTree =[];
 
@@ -406,12 +414,12 @@ List<List> groupTree =[];
 class DataClass{
 
    Future<List> getTree() async{
-
     List<List> result = [];
     int n = listTree.length;
-    int a = 5,b=0;
-    int c = (n/a) as int;
 
+    int a = 5,b=0;
+    double d =(n/a);
+    int c = d.round() ;
     List E=[];
     for(int i=0;i<c;i++){
       E=[];

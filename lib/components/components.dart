@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:projet_plante/components/data_class.dart';
 
 //ignore: must_be_immutable
 class EntryField extends StatefulWidget {
@@ -21,7 +22,7 @@ class _EntryFieldState extends State<EntryField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 15,left: 50,right: 50),
+      padding: const EdgeInsets.only(top: 15,left: 35,right: 35),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -41,8 +42,8 @@ class _EntryFieldState extends State<EntryField> {
             child: TextFormField(
                   readOnly:  widget.type == 'date'? true:false,
                   showCursor: widget.type == 'date'? false:true,
-                  style: const TextStyle(
-                    color: Color(0xFF236718),
+                  style: TextStyle(
+                    color: colorApp,
                     fontWeight: FontWeight.w700,
                     fontSize: 16
                   ),
@@ -65,11 +66,11 @@ class _EntryFieldState extends State<EntryField> {
                         padding: const EdgeInsets.only(left:15.0),
                         child: widget.icon,
                       ),
-                      iconColor: const Color(0xFF236718),
+                      iconColor: colorApp,
                       hoverColor: Colors.white,
                       labelText: widget.text,
-                      labelStyle: const TextStyle(
-                        color: Color(0xFF236718),
+                      labelStyle: TextStyle(
+                        color: colorApp,
                         fontSize: 16,
                         fontWeight: FontWeight.w700
                       ),
@@ -112,6 +113,72 @@ class _EntryFieldState extends State<EntryField> {
   }
 }
 
+class EntrySearch extends StatefulWidget {
+  EntrySearch({super.key,required this.text});
+  String text;
+
+  @override
+  State<EntrySearch> createState() => _EntrySearchState();
+}
+
+class _EntrySearchState extends State<EntrySearch> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 350,
+      height: 50,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                offset: Offset(
+                  2.0,
+                  2.0,
+                ), //Offset
+                blurRadius: 3.0,
+                spreadRadius: 2.0,
+              ), //BoxShadow
+              BoxShadow(
+                color: Color(0xff363636),
+                offset: Offset(0.0, 0.0),
+                blurRadius: 3.0,
+                spreadRadius: 0.0,
+              )
+        ]
+      ),
+      child: TextField(
+        decoration: InputDecoration(
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: const EdgeInsets.all(0),
+            iconColor: colorApp,
+            hoverColor: Colors.white,
+            labelText: widget.text,
+            icon: const Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: null,
+            ),
+            labelStyle: TextStyle(
+                color: colorApp,
+                fontSize: 16,
+                fontWeight: FontWeight.w700
+            ),
+            border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                borderSide: BorderSide(
+                    width: 0,
+                    style: BorderStyle.none
+                )
+            )
+        ),
+      ),
+    );
+  }
+}
+
+
 Widget emptyPage(String text,Widget addWidget){
 
   return Center(
@@ -136,13 +203,15 @@ Widget emptyPage(String text,Widget addWidget){
 
 class GradientIcon extends StatelessWidget {
   final IconData icon;
-  final double size;
-  final Gradient gradient;
+  final double size = 25;
+  final Gradient gradient = LinearGradient(
+                              colors: listColor,
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              );
 
-  const GradientIcon({super.key,
+  GradientIcon({super.key,
     required this.icon,
-    required this.size,
-    required this.gradient,
   });
 
   @override
@@ -151,14 +220,9 @@ class GradientIcon extends StatelessWidget {
       shaderCallback: (bounds) {
         return gradient.createShader(bounds);
       },
-      child: Icon(
-        icon,
-        size: size,
-        color: Colors.white, // La couleur ici sera remplacée par le dégradé
-      ),
+      child: Icon(icon, size: size, color: Colors.white,),
     );
   }
 }
-
 
 

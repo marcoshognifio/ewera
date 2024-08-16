@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'data_class.dart';
 
 //ignore: must_be_immutable
 class ButtonWelcome extends StatelessWidget {
@@ -48,7 +49,7 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top:  15.0,left: 50,right: 50),
+      padding: const EdgeInsets.only(top:  15.0,left: 35,right: 35),
       child: SizedBox(
         child: Row(
           children: [
@@ -56,7 +57,7 @@ class Button extends StatelessWidget {
               child: ElevatedButton(
 
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF236718), //Color(0xff2f52f6),
+                  backgroundColor: colorApp, //Color(0xff2f52f6),
                   padding:const  EdgeInsets.only(top: 20, bottom: 20),
                   elevation: 2,
                   shape: RoundedRectangleBorder(
@@ -74,4 +75,30 @@ class Button extends StatelessWidget {
   }
 }
 
+class ButtonIcon extends StatelessWidget {
+  ButtonIcon({super.key, required this.onTap,required this.icon,required this.size});
+  final VoidCallback onTap;
+  Icon icon;
+  double size;
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: size,
+      width: size,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(50),
+        gradient: LinearGradient(
+          colors: listColor,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: IconButton(
+        color: Colors.transparent,
+        icon:icon ,
+        onPressed: onTap
+      ),
+    );
+  }
+}

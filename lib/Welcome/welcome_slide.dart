@@ -16,9 +16,11 @@ class WelcomeSlide extends StatelessWidget {
     return Scaffold(
       body: Container(
           alignment: Alignment.bottomCenter,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/image2.png'),
+                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3),
+                      BlendMode.darken),
+                  image: const AssetImage('assets/images/image2.png'),
                   fit: BoxFit.fill),
           ),
           child: Column(

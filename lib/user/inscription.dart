@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_plante/components/components.dart';
+import 'package:projet_plante/components/data_class.dart';
 
 import '../components/button.dart';
 
@@ -81,13 +82,8 @@ class _LoginState extends State<InscriptionPage> {
     return Container(
       child: Column(
         children: [
-          const Text("Get Started Free",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 40,
-              wordSpacing: 5,
-              fontWeight: FontWeight.bold,
-            ),
+          Text("Get Started Free",
+            style: textLogin,
           ),
           Text("Free Forever No Credit Card Needed",
             style: TextStyle(

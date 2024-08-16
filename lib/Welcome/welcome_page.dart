@@ -14,7 +14,7 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   void initState() {
     super.initState();
-    timer=Timer.periodic( const Duration(seconds: 5),(timer){
+    timer=Timer.periodic( const Duration(seconds: 3),(timer){
       setState(() {
 
         Navigator.pushNamed(context, '/welcomeSlide');

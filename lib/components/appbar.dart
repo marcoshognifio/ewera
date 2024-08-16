@@ -12,16 +12,16 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
           BoxShadow(
             color: Colors.black12,
             offset: Offset(
-              5.0,
-              5.0,
+              3.0,
+              3.0,
             ), //Offset
-            blurRadius: 5.0,
+            blurRadius: 3.0,
             spreadRadius: 2.0,
           ), //BoxShadow
           BoxShadow(
             color: Color(0xff363636),
             offset: Offset(0.0, 0.0),
-            blurRadius: 5.0,
+            blurRadius: 3.0,
             spreadRadius: 0.0,
           )
         ]

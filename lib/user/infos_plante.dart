@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:projet_plante/components/data_class.dart';
-
 import '../components/button.dart';
 
 class DetailTree extends StatelessWidget {
@@ -9,23 +8,22 @@ class DetailTree extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: CustomScrollView(
-        slivers: [
-          SliverPersistentHeader(
-              delegate: DetailSliver(tree: tree, expandedHeight: 350, roundedContainerHeight: 30,)
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.only(top:10,left:20,right: 20,bottom: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: columnWidget(context),
-              ),
+          slivers: [
+            SliverPersistentHeader(
+                delegate: DetailSliver(tree: tree, expandedHeight: 350, roundedContainerHeight: 30,)
             ),
-          )
-        ],
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.only(top:10,left:20,right: 20,bottom: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: columnWidget(context),
+                ),
+              ),
+            )
+          ],
       ),
     );
   }
@@ -89,32 +87,32 @@ class DetailSliver extends SliverPersistentHeaderDelegate {
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Stack(
-      children: [
-        Hero(
-          tag: tree['name_one'],
-          child: Image.asset(
-             tree['image'],
-            width: MediaQuery.of(context).size.width,
-            height: expandedHeight,
-            fit: BoxFit.cover,
+        children: [
+          Hero(
+            tag: tree['name_one'],
+            child: Image.asset(
+               tree['image'],
+              width: MediaQuery.of(context).size.width,
+              height: expandedHeight,
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        Positioned(
-          top: expandedHeight - roundedContainerHeight - shrinkOffset,
-          child: Container(
-            alignment: Alignment.center,
-            width: MediaQuery.of(context).size.width,
-            height: roundedContainerHeight,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-            )
-          ),
-        )
-      ],
+          Positioned(
+            top: expandedHeight - roundedContainerHeight - shrinkOffset,
+            child: Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              height: roundedContainerHeight,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              )
+            ),
+          )
+        ],
     );
   }
 

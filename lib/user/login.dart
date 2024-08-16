@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_plante/components/components.dart';
+import 'package:projet_plante/components/data_class.dart';
 
 import '../components/button.dart';
 
@@ -36,7 +37,7 @@ class _LoginState extends State<LoginPage> {
       body: Container(
         decoration: BoxDecoration(
             image:DecorationImage(
-                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5),
+                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5),
                   BlendMode.darken),
                 image: const AssetImage('assets/images/image2.png'),
                 fit: BoxFit.fill),
@@ -54,7 +55,7 @@ class _LoginState extends State<LoginPage> {
                   ),
                   child: IconButton(
                     color: Colors.white,
-                    icon: const Icon(Icons.arrow_forward_ios,color:Color(0xFF236718),),
+                    icon: Icon(Icons.arrow_forward_ios,color:colorApp),
                     onPressed: () { Navigator.pushNamed(context, '/inscription'); },
                   ),
                 ),
@@ -77,13 +78,8 @@ class _LoginState extends State<LoginPage> {
     return Container(
       child: Column(
         children: [
-          const Text("Welcome Back!",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 40,
-              wordSpacing: 5,
-              fontWeight: FontWeight.bold,
-            ),
+           Text("Welcome Back!",
+            style: textLogin,
           ),
           Text("Welcome back we missed you",
             style: TextStyle(
