@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:projet_plante/components/appbar.dart';
 import 'package:projet_plante/user/accueil.dart';
-import 'package:projet_plante/user/plantes.dart';
 import '../components/components.dart';
 import '../components/data_class.dart';
+import '../plantes/plantes.dart';
 
 class UserSlideWidgets extends StatefulWidget {
   UserSlideWidgets({super.key});

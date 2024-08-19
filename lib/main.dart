@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_plante/Welcome/welcome_slide.dart';
-import 'package:projet_plante/user/infos_plante.dart';
+import 'package:projet_plante/plantes/infos_plante.dart';
 import 'package:projet_plante/user/inscription.dart';
 import 'package:projet_plante/user/login.dart';
 import 'package:projet_plante/user/user_silde_widgets.dart';

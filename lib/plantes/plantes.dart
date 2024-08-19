@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_plante/components/button.dart';
+import '../components/components.dart';
 import '../components/data_class.dart';
 import 'infos_plante.dart';
 
@@ -17,12 +18,20 @@ class Trees extends StatelessWidget {
                 future: DataClass().getTree(),
                 builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
                   if(snapshot.hasData){
-                    return ListView.builder(
-                      itemCount: groupTree.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return lisTreeWidget(groupTree[index],context);
-                      },
-
+                    return SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top:20.0),
+                        child: Column(
+                          children:[
+                            EntrySearch(text: 'Rechecher une plante/Maladie'),
+                            Card(
+                              child: Column(
+                                children: columnItemWidget(groupTree, context),
+                              ),
+                            )
+                          ] ,
+                        ),
+                      ),
                     );
                   }
                   else {
@@ -34,6 +43,18 @@ class Trees extends StatelessWidget {
           );
         }
     );
+  }
+
+  List<Widget> columnItemWidget(List list,BuildContext context){
+    List<Widget> result =[];
+
+    for(int i=0,c=list.length;i<c;i++){
+
+      result.add(
+          lisTreeWidget(groupTree[i],context)
+      );
+    }
+    return result;
   }
 
   Widget lisTreeWidget(List list,BuildContext context){
