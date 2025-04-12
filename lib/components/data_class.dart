@@ -7,10 +7,11 @@ import 'package:sqflite/sqflite.dart';
 import 'package:http/http.dart' as http;
 
 
-const String url = "http://192.168.100.210:5000";
+const String url = "http://192.168.100.92:5555";
 String token = "";
 String accessToken = "";
 String refreshToken = "";
+bool subscription = true;
 Map currentUser = {};
 double screenWidth = 0;
 double screenHeight = 0;
@@ -18,6 +19,7 @@ NumberFormat formatter = NumberFormat.decimalPatternDigits(
   locale: 'fr',
   decimalDigits: 0,
 );
+int during = 400;
 Map userCurrent = {};
 List<String> listRoutes = [];
 
@@ -212,7 +214,7 @@ class DatabaseHelper {
         body: jsonEncode(request),
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer $token"
+          "Authorization": "Bearer $accessToken"
         }
     );
 
@@ -243,12 +245,13 @@ class DatabaseHelper {
     Map<String, dynamic> request = {
       'term': item
     };
+
     final uri = Uri.parse("$url/diseases/search");
     final response = await http.post(uri,
         body: jsonEncode(request),
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer $token"
+          "Authorization": "Bearer $accessToken"
         }
     );
 
@@ -277,7 +280,20 @@ class DatabaseHelper {
 
     userCurrent = json.decode(response.body);
   }
+}
 
+String displayContent(String text) {
+
+  if (subscription) {
+    return text.replaceAll('*', '');
+  }
+
+  int indexHash = text.indexOf('*');
+  if (indexHash != -1) {
+    return text.substring(0, indexHash);
+  }
+
+  return text;
 }
 
 

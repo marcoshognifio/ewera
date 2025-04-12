@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ewera/components/data_class.dart';
 
+import '../components/appbar.dart';
+
 class PayPage extends StatelessWidget {
   const PayPage({super.key});
 
@@ -8,13 +10,17 @@ class PayPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: ListView.builder(
-          itemCount: listPay.length,
-          itemBuilder: (BuildContext context, int index) {
-            Map item = listPay[index];
-            return parametreItem(item['name'],item['detail'], item['image'], (){});
-          },
+      appBar: appBarWidget('Informations de Profile',context),
+      body: Padding(
+        padding: const EdgeInsets.only(top:20.0),
+        child: ListView.builder(
+            itemCount: listPay.length,
+            itemBuilder: (BuildContext context, int index) {
+              Map item = listPay[index];
+              return parametreItem(item['name'],item['detail'], item['image'], (){});
+            },
 
+        ),
       )
     ) ;
   }

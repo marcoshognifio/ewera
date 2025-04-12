@@ -1,11 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:ewera/components/components.dart';
 import 'package:ewera/components/data_class.dart';
 import 'package:http/http.dart' as http;
 import '../components/background-image.dart';
 import '../components/button.dart';
+import '../components/input_file.dart';
 
 class InscriptionPage extends StatefulWidget {
   const InscriptionPage({super.key});
@@ -23,25 +23,34 @@ class _InscriptionState extends State<InscriptionPage> {
   final confirmPasswordController = TextEditingController();
   bool isLoading = false;
   String error ="";
-  RegExp passwordRegex = RegExp(
-      r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{4,}$");
+  final FocusNode focusNode1 = FocusNode();
+  final FocusNode focusNode2 = FocusNode();
   RegExp usernameRegex = RegExp(r"^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]{3,50}$");
   RegExp emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+  Map<String, String> messages = {};
+  bool obscurePassword = true;
+  bool obscureConfirmPassword = true;
+
+
   @override
   void initState() {
     super.initState();
   }
 
+
   @override
   void dispose() {
-    super.dispose();
     usernameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    focusNode1.dispose();
+    focusNode2.dispose();
+    super.dispose();
   }
 
-  Future actionFunction() async {
+  actionFunction() async {
+
     if (formKey.currentState!.validate()) {
       Map<String, dynamic> request = {
         'nom' :usernameController.text,
@@ -52,19 +61,21 @@ class _InscriptionState extends State<InscriptionPage> {
       setState(() {
         isLoading = true;
       });
+
       final uri = Uri.parse("$url/auth/register");
       final response = await http.post(uri,
           body:jsonEncode(request),
           headers: {"Content-Type": "application/json","Authorization":"Bearer $token"}
       );
       final Map<String, dynamic> data = json.decode(response.body);
-      print(data);
       setState(() {
         isLoading = false;
       });
+      print(data);
       if (data['message'] == 'succes') {
         token = "${data['token']}";
-        await Navigator.pushNamed(context, '/confirmEmail',arguments: 'create');
+        request = {'email':request["email"],'type':'create' };
+        await Navigator.pushNamed(context, '/confirmEmail',arguments: request);
       }
       else {
         if(data['message'] == 'exists'){
@@ -81,6 +92,7 @@ class _InscriptionState extends State<InscriptionPage> {
     }
   }
 
+
   Widget build(BuildContext context) {
 
     screenWidth = MediaQuery.of(context).size.width;
@@ -92,132 +104,173 @@ class _InscriptionState extends State<InscriptionPage> {
         Scaffold(
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 70,),
-                SizedBox(
-                  width: screenWidth*0.8,
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.white
+            child: Center(
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: screenWidth*0.8,
+                    height: screenHeight*0.2,
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.white
+                          ),
+                          child: IconButton(
+                            color: Colors.white,
+                            icon: Icon(Icons.arrow_forward_ios, color: colorApp),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/login',arguments: const Offset(1, 0));
+                            },
+                          ),
                         ),
-                        child: IconButton(
-                          color: Colors.white,
-                          icon: Icon(Icons.arrow_forward_ios, color: colorApp),
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/login',arguments: const Offset(1, 0));
-                          },
-                        ),
-                      ),
-                      Spacer()
-                    ],
-                  ),
-                ),
-                SizedBox(height: 30,),
-                Text("Bienvenu sur EWERA",
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    color: Colors.white,
-                    fontSize: screenWidth * 0.06,
-                    wordSpacing: 5,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text("Connectez vous afin de gérer vos projets",
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700
-                  ),
-                ),
-                SizedBox(height: 30,),
-                Container(
-                  child: Column(
-                    children: [
-
-                      if(error != "")
-                        Text(error, style: TextStyle(
-                            color: Colors.red,
-                            fontFamily: 'Roboto',
-                            fontSize: screenWidth * 0.04
-                        ),),
-
-                      Form(
-                          key: formKey,
-                          child: Column(
-                            children: [
-                              EntryField(
-                                  text: "Username",
-                                  type: "text",
-                                  express: usernameRegex,
-                                  control: usernameController,
-                                  required: true,
-                                  error: "Nom invalide",
-                                  icon: const Icon(Icons.account_circle_sharp)),
-
-                              EntryField(
-                                  text: "E-mail",
-                                  type: "text",
-                                  express: emailRegex,
-                                  control: emailController,
-                                  required: true,
-                                  error: "Entrez un adresse email",
-                                  icon: const Icon(Icons.mail)),
-
-                              EntryField(
-                                  text: "Password",
-                                  type: "password",
-                                  express: passwordRegex,
-                                  control: passwordController,
-                                  required: true,
-                                  error: "",
-                                  icon: const Icon(Icons.vpn_key_outlined)),
-
-                              EntryField(
-                                  text: "Confirmer Password",
-                                  type: "password",
-                                  express: passwordRegex,
-                                  control: confirmPasswordController,
-                                  required: true,
-                                  error: "",
-                                  icon: const Icon(Icons.vpn_key_outlined)),
-
-                              Padding(
-                                padding: const EdgeInsets.only(top:  15.0,right: 50),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text('Forgot Password ?',style: TextStyle(
-                                        fontFamily: 'Roboto-Regular',
-                                        color: Colors.white.withOpacity(0.7),),
-                                        textAlign: TextAlign.end,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              Button(text: 'Inscription', onTap: () async{
-                                await actionFunction();
-                              },)
-                            ],
-                          )
-                      )
-                    ],
-                  ),
-                ),
-                if(isLoading )
-                  const Align(
-
-                    child: Center(
-                        child: CircularProgressIndicator()
+                        Spacer()
+                      ],
                     ),
-                  )
-              ],
+                  ),
+                  Text("Bienvenu sur EWERA",
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      color: Colors.white,
+                      fontSize: screenWidth * 0.06,
+                      wordSpacing: 5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text("Connectez vous afin de gérer vos projets",
+                    style: TextStyle(
+                        fontFamily: 'Roboto',
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700
+                    ),
+                  ),
+                  SizedBox(height: 30,),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+
+                        if(error != "")
+                          Text(error, style: TextStyle(
+                              color: Colors.red,
+                              fontFamily: 'Roboto',
+                              fontSize: screenWidth * 0.04
+                          ),),
+
+                        Form(
+                            key: formKey,
+                            child: Column(
+                              children: [
+                                EntryField(
+                                    text: "Username",
+                                    express: usernameRegex,
+                                    control: usernameController,
+                                    required: true,
+                                    error: "Nom invalide",
+                                    icon: const Icon(Icons.account_circle_sharp),
+                                    onTap: (){},
+                                    validator: (value) {
+
+                                },),
+
+                                EntryField(
+                                    text: "E-mail",
+                                    express: emailRegex,
+                                    control: emailController,
+                                    required: true,
+                                    error: "Entrez un adresse email",
+                                    icon: const Icon(Icons.mail),
+                                  onTap: (){},
+                                  validator: (value) {
+
+                                },),
+
+                                InputFieldPassword(
+                                  label: 'Mot de passe',
+                                  controller: passwordController,
+                                  onTap: (){} ,
+                                  focusNode: focusNode1,
+                                  message: messages['Mot de passe'],
+                                  toggleVisibility:
+                                      () {
+                                    setState(() {
+                                      obscurePassword = !obscurePassword;
+                                    });
+                                  }, obscureText: obscurePassword,
+                                  validator: (value ) {
+
+                                      if (value == null || value.isEmpty) {
+                                        return 'Le mot de passe est requis';
+                                      }
+                                      RegExp motDePasseRegExp = RegExp(
+                                        r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])[A-Za-z0-9@$!%*?&]{8,}$',
+                                      );
+                                      if (!motDePasseRegExp.hasMatch(value)) {
+                                        return 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial';
+                                      }
+                                      return null;
+                                    }),
+
+                                InputFieldPassword(
+                                  label: 'Confirmer Mot de passe',
+                                  controller: confirmPasswordController,
+                                  onTap: (){} ,
+                                  focusNode: focusNode2,
+                                  message: messages['Confirmer Password'],
+                                  toggleVisibility: () {
+                                    setState(() {
+                                      obscureConfirmPassword = !obscureConfirmPassword;
+                                    });
+                                  }, obscureText: obscureConfirmPassword,
+                                  validator: (value) {
+                                    if (value != passwordController.text) {
+                                      return 'Les mots de passe ne correspondent pas';
+                                    }
+                                    return null;
+                                },
+                                ),
+
+                                Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                    Button(text: 'Inscription', onTap: actionFunction),
+                                    if(isLoading )
+                                      CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                  ],
+                                )
+                              ],
+                            )
+                        ),
+                        SizedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text("Avez-vous déjà un compte ?",
+                                style: TextStyle(
+                                    fontFamily: 'Roboto-Regular',
+                                    color: Colors.white),),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/login',arguments: const Offset(1, 0));
+                                  },
+                                  child: const Text("Se connecter",
+                                    style: TextStyle(
+                                        fontFamily: 'Roboto-Regular',
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),)
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         )

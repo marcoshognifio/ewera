@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
 
@@ -14,7 +15,7 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   void initState() {
     super.initState();
-    timer=Timer.periodic( const Duration(seconds: 3),(timer){
+    timer=Timer.periodic( const Duration(seconds: 10),(timer){
       setState(() {
 
         Navigator.pushNamed(context, '/welcomeSlide');
@@ -27,13 +28,15 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('assets/images/image1.png'),
-                fit: BoxFit.fill)
+                fit: BoxFit.cover)
         ),
         child: Center(
           child: Container(

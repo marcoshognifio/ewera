@@ -1,37 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:ewera/components/data_class.dart';
 
 //ignore: must_be_immutable
-class EntryField extends StatefulWidget {
-  EntryField({super.key,required this.text,required this.type,required this.express,
-              required this.control,required this.required,required this.error,required this.icon});
-  String  text, type;
+
+class EntryField extends StatelessWidget {
+  EntryField({super.key,required this.text,required this.express,
+    required this.control,required this.required,required this.error,
+    required this.icon, this.onTap,required this.validator});
+  String  text;
+  VoidCallback? onTap;
   RegExp express;
   TextEditingController control;
   bool required;
-  String error;
+  String? error;
   Icon icon;
-
-
-  @override
-  State<EntryField> createState() => _EntryFieldState();
-}
-
-class _EntryFieldState extends State<EntryField> {
-
-  bool isObscured = true;
+  String? Function(String?) validator;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 15.0),
+      padding: const EdgeInsets.only(bottom: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom:  10.0),
-            child: Text(widget.text,style: const TextStyle(
+            child: Text(text,style: const TextStyle(
                 fontFamily: 'Roboto-Regular',
                 fontWeight: FontWeight.w500,
                 fontSize: 15,
@@ -41,84 +35,60 @@ class _EntryFieldState extends State<EntryField> {
           SizedBox(
             width: screenWidth*0.8,
             child: TextFormField(
-              readOnly:  widget.type == 'date'? true:false,
-              showCursor: widget.type == 'date'? false:true,
+              onTap: onTap,
               style: TextStyle(
                   fontFamily: 'Roboto-Regular',
                   color: colorApp,
                   fontWeight: FontWeight.w700,
                   fontSize: 16
               ),
-              onTap: widget.type != 'date'? (){}:
-                  ()async{
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime.now(),
-                );
-                widget.control.text = "${pickedDate?.day}-${pickedDate?.month}-${pickedDate?.year}";
-              },
-              controller: widget.control,
-              obscureText: widget.type == 'password' ? isObscured : false ,
+              cursorColor: colorApp,
+              controller: control,
               decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  isDense: true,
-                  contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left:15.0,right: 10),
-                    child: widget.icon,
-                  ),
-                  prefixIconColor: colorApp,
-                  hoverColor: Colors.white,
-                  border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(
-                          width: 0,
-                          style: BorderStyle.none
-                      )
-                  ),
-                  suffixIcon: widget.type == 'password'? IconButton(
-                      padding: const EdgeInsetsDirectional.only(end: 12),
-                      onPressed:(){
-                        setState(() {
-                          isObscured = isObscured == false;
-                        });
-                      }
-                      , icon: const Icon(Icons.visibility)
-                  ):null
+                fillColor: Colors.white,
+                filled: true,
+                isDense: true,
+                contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(left:15.0,right: 10),
+                  child: icon,
+                ),
+                prefixIconColor: colorApp,
+                hoverColor: Colors.white,
+                border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    borderSide: BorderSide.none
+                ),
               ),
               validator: (value) {
-                if(widget.required == true )
+                if(required == true )
                 {
                   if(value!.isEmpty){
                     return 'Ce champ est obligatoire';
                   }
-                  if (!widget.express.hasMatch(value))
-                  {
-                    return widget.error;
-                  }
-                  return null;
-                }
-                else
-                {
-                  if (value!.isNotEmpty && !widget.express.hasMatch(value))
-                  {
-                    return widget.error;
-                  }
-                  else {
+                  else{
+                    if (!express.hasMatch(value))
+                    {
+                      return error;
+                    }
                     return null;
                   }
                 }
+                else {
+                  return null;
+                }
               },
+
             ),
           ),
         ],
       ),
-    );
+    ) ;
   }
-
 }
+
+
+
 
 class EntrySearch extends StatefulWidget {
   EntrySearch({super.key, required this.text,required this.formKey,required this.control,required this.onTap});
@@ -180,7 +150,7 @@ class _EntrySearchState extends State<EntrySearch> {
               decoration: InputDecoration(
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: const EdgeInsets.all(0),
+                contentPadding: const EdgeInsets.only(left: 20),
                 hoverColor: Colors.white,
                 labelStyle: TextStyle(
                   fontFamily: 'Roboto-Regular',
@@ -338,6 +308,7 @@ class _EntryFieldEditState extends State<EntryFieldEdit> {
                   fontWeight: FontWeight.w700,
                   fontSize: 16
               ),
+              cursorColor: colorApp,
               enabled: widget.text == 'EMAIL' ? false : true,
               controller: widget.control,
               obscureText: widget.type == 'password' ? widget.isObscured.value : false ,

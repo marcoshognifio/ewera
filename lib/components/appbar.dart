@@ -1,72 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
+import 'data_class.dart';
 
-class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
-  AppbarWidget({super.key,required this.notifier});
-  ChangeAppBar notifier;
-
-  @override
-  Widget build(BuildContext context) {
-    return  ChangeNotifierProvider(
-      create: (BuildContext context)=>notifier,
-      child: Container(
-        decoration: const BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                offset: Offset(
-                  3.0,
-                  3.0,
-                ), //Offset
-                blurRadius: 3.0,
-                spreadRadius: 2.0,
-              ), //BoxShadow
-              BoxShadow(
-                color: Color(0xff363636),
-                offset: Offset(0.0, 0.0),
-                blurRadius: 3.0,
-                spreadRadius: 0.0,
-              )
-            ]
-        ),
-        child: Consumer<ChangeAppBar>(
-            builder:(context,notifier,_)=>notifier.appBar
-        ),
-      ),
-    );
-  }
-
-  @override
-  // TODO: implement preferredSize
-  Size get preferredSize => const Size.fromHeight(60);
-}
-
-class ChangeAppBar with ChangeNotifier {
-  Widget _appBar;
-  ChangeAppBar(this._appBar);
-  Widget get appBar=>_appBar;
-  set appBar(Widget newBar){
-    _appBar = newBar;
-    notifyListeners();
-  }
-}
-
-Widget appBarWidget(String title, ChangeAppBar notifier, Widget appBarParent,GlobalKey<NavigatorState> navigatorKey){
-
+AppBar appBarWidget (String title,BuildContext context){
   return AppBar(
-    title: Center(
-      child: Text(title,
-        style: const TextStyle(
-            fontFamily: 'Roboto-Regular',
-            color: Colors.black
-        ),
+    elevation: 3.0,
+    shadowColor: Colors.black,
+    backgroundColor: Colors.white,
+    title: Text(title,
+      style: const TextStyle(
+          fontFamily: 'Roboto-Regular',
+          color: Colors.black
       ),
     ),
     leading: IconButton(
         onPressed: (){
-          notifier.appBar = appBarParent;
-          navigatorKey.currentState?.pop();
+          Navigator.pop(context);
         },
         icon: const Icon(Icons.arrow_back_ios_rounded,
           color: Colors.black,
@@ -74,3 +23,24 @@ Widget appBarWidget(String title, ChangeAppBar notifier, Widget appBarParent,Glo
     ),
   );
 }
+
+AppBar appBarParent(BuildContext context){
+  return AppBar(
+    elevation: 3,
+    backgroundColor: Colors.white,
+    shadowColor: Colors.black,
+    leading:  Center(child: Image.asset('assets/images/Ewera.png',width: 70,color: colorApp,)),
+    actions: [
+      IconButton(
+        color: Colors.white,
+        icon: const Icon(Icons.account_circle_rounded,size: 50,color:Color(0xFF236718),),
+        onPressed: (){
+          Navigator.pushNamed(context, '/profileUser');
+        },
+      ),
+    ],
+
+  );
+}
+
+

@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:ewera/user/pay_page.dart';
+import '../components/appbar.dart';
 import '../components/button.dart';
 import '../components/data_class.dart';
 
-class DetailTisane extends StatelessWidget {
+class DetailTisane extends StatefulWidget {
   const DetailTisane({super.key,required this.tisane});
   final Map<dynamic,dynamic> tisane;
 
   @override
+  State<DetailTisane> createState() => _DetailTisaneState();
+}
+
+class _DetailTisaneState extends State<DetailTisane> {
+
+  actionFunction()async {
+
+      Navigator.pushNamed(context, '/abonnement');
+
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: appBarWidget('Informations sur la tisane',context),
       body: CustomScrollView(
         slivers: [
           SliverPersistentHeader(
-              delegate: DetailSliver(tisane: tisane, expandedHeight: 350, roundedContainerHeight: 30,)
+              delegate: DetailSliver(tisane: widget.tisane, expandedHeight: 350, roundedContainerHeight: 30,)
           ),
           SliverToBoxAdapter(
             child: Container(
@@ -44,7 +56,7 @@ class DetailTisane extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(tisane['name'],
+            child: Text(widget.tisane['name'],
               style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -52,7 +64,7 @@ class DetailTisane extends StatelessWidget {
               ),
             ),
           ),
-          Text("${tisane['price']} €",
+          Text("${widget.tisane['price']} €",
             style: TextStyle(
                 color: colorApp,
                 fontSize: 15,
@@ -67,29 +79,19 @@ class DetailTisane extends StatelessWidget {
     result.add(
         Padding(
           padding: const EdgeInsets.only(left:10, bottom: 10.0),
-          child: Text(tisane['description'],
+          child: Text(widget.tisane['description'],
               style:t
           ),
         )
     );
 
-    result.add(Button(
-      text: 'Acheter',
-      onTap:() {
-        Navigator.of(context).push(
-            PageRouteBuilder(
-              transitionDuration: const Duration(milliseconds: 500),
-              pageBuilder:(context, animation, secondAnimation)=> const PayPage(),
-              transitionsBuilder: (context, animation, secondAnimation,child) {
-                var begin=const Offset(1.0, 0.0);
-                var end=const Offset(0.0, 0.0);
-                var tween=Tween(begin: begin,end:end);
-                return  SlideTransition(position: animation.drive((tween)),child: child);
-              }
-            )
-        );
-      }
+    result.add(Center(
+      child: Button(
+        text: 'Acheter',
+        onTap: actionFunction
+      ),
     ));
+
     return result;
   }
 }

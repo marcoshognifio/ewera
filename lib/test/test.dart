@@ -1,58 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 
-
-
-class CustomTextField extends StatefulWidget {
-  @override
-  _CustomTextFieldState createState() => _CustomTextFieldState();
-}
-
-class _CustomTextFieldState extends State<CustomTextField> {
-  final TextEditingController _controller = TextEditingController();
-  bool _isTextEmpty = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.addListener(() {
-      setState(() {
-        _isTextEmpty = _controller.text.isEmpty;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
+class MyAppA extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top:100.0),
-        child: Stack(
-          alignment: Alignment.centerLeft,
-          children: [
-            if (_isTextEmpty)
-              Text(
-                "Saisissez ici",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16.0,
+
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Recette Défilable'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                // Titre de la section des ingrédients
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'Ingrédients',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-            TextField(
-              controller: _controller,
-              style: TextStyle(fontSize: 16.0),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                contentPadding: const EdgeInsets.all(12.0),
-              ),
+            
+                // Liste des ingrédients
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('1 tasse de farine'),
+            
+                ),
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('2 œufs'),
+            
+                ),
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('1/2 tasse de lait'),
+            
+                ),
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('1 pincée de sel'),
+            
+                ),
+            
+                // Titre de la section des instructions
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'Instructions',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+            
+                // Liste des instructions
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('Mélangez les ingrédients secs dans un grand bol.'),
+            
+                ),
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('1/2 tasse de lait'),
+            
+                ),
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('1 pincée de sel'),
+            
+                ),
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('Ajoutez les œufs et le lait, puis mélangez bien.'),
+            
+                ),
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('Faites cuire la pâte dans une poêle chaude jusqu\'à ce qu\'elle soit dorée.'),
+            
+                ),
+                ListTile(
+                  leading: Icon(Icons.circle, size: 10),
+                  title: Text('Servez avec votre garniture préférée.'),
+            
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -6,8 +6,8 @@ import '../components/button.dart';
 import '../components/data_class.dart';
 
 class EmailConfirmationPage extends StatefulWidget {
-  const EmailConfirmationPage({super.key, required this.type});
-  final String type;
+  const EmailConfirmationPage({super.key, required this.data});
+  final Map<String,dynamic> data;
 
   @override
   EmailConfirmationPageState createState() => EmailConfirmationPageState();
@@ -53,57 +53,92 @@ class EmailConfirmationPageState extends State<EmailConfirmationPage> {
     }
   }
 
-  Future<void> actionFunction() async {
+  actionFunction() async {
+
     setState(() {
       isLoading = true;
     });
 
-    Map<String, dynamic> request;
-    String urlHelp = '';
+    if (_code.length == 6){
+      Map<String, dynamic> request;
+      String urlHelp = '';
 
-    if (widget.type == 'create') {
-      request = {
-        'token': token,
-        'code': _code,
-      };
-      urlHelp = '$url/auth/confirm-email';
-    } else {
-      request = {
-        'token': token,
-        'resetCode': _code,
-      };
-      urlHelp = '$url/auth/forgot-password/reset-password';
-    }
-
-    final uri = Uri.parse(urlHelp);
-    final response = await http.post(
-      uri,
-      body: jsonEncode(request),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-    );
-    final Map<String, dynamic> data = json.decode(response.body);
-
-    setState(() {
-      isLoading = false;
-    });
-
-
-    if (data['message'] == 'succes') {
-      token = data['token'];
-      if (widget.type == 'create') {
-        await Navigator.pushNamed(context, '/login');
+      if (widget.data['type'] == 'create') {
+        request = {
+          'token': token,
+          'code': _code,
+        };
+        urlHelp = '$url/auth/confirm-email';
       } else {
-        await Navigator.pushNamed(context, '/changeForgetPassword');
+        request = {
+          'token': token,
+          'resetCode': _code,
+        };
+        urlHelp = '$url/auth/forgot-password/reset-password';
       }
-    } else {
+
+      final uri = Uri.parse(urlHelp);
+      final response = await http.post(
+        uri,
+        body: jsonEncode(request),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+      final Map<String, dynamic> data = json.decode(response.body);
+
       setState(() {
-        error = data['message'];
+        isLoading = false;
+      });
+
+
+      if (data['message'] == 'succes') {
+        token = data['token'];
+        if (widget.data['type'] == 'create') {
+          await Navigator.pushNamed(context, '/login');
+        } else {
+          await Navigator.pushNamed(context, '/changeForgetPassword');
+        }
+      } else {
+        setState(() {
+          error = data['message'];
+        });
+      }
+    }
+    else {
+      setState(() {
+        error = "Veuillez remplir tous les champs.";
       });
     }
   }
+
+  reviewCode() async {
+
+    setState(() {
+      isLoading = true;
+    });
+
+    String urlHelp = '';
+    if (widget.data['type'] == 'create') {
+      await Navigator.pushNamed(context, '/confirmEmail',arguments: {'email':widget.data["email"],'type':'create' });
+    }else {
+      urlHelp = "$url/auth/forgot-password";
+    }
+      final uri = Uri.parse("$url/auth/forgot-password");
+      final response = await http.post(uri,
+          body:jsonEncode({'email':widget.data['email']}),
+          headers: {"Content-Type": "application/json","Authorization":"Bearer $token"}
+      );
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      setState(() {
+        isLoading = false;
+      });
+
+        token = data['token'];
+        await Navigator.pushNamed(context, '/confirmEmail',arguments:widget.data);
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +152,7 @@ class EmailConfirmationPageState extends State<EmailConfirmationPage> {
           body: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 70),
+                SizedBox(height: screenHeight*0.08),
                 Text(
                   "Vérification de l'Email",
                   style: TextStyle(
@@ -127,9 +162,9 @@ class EmailConfirmationPageState extends State<EmailConfirmationPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
+                Text(
                   "Entrez le code qui vous a été envoyé sur votre email :",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
+                  style: TextStyle(fontSize: screenWidth*0.045, color: Colors.white),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),
@@ -172,9 +207,7 @@ class EmailConfirmationPageState extends State<EmailConfirmationPage> {
                           counterText: "",
                         ),
                         onChanged: (value) async {
-                          print('vbbbhtrrr');
                           _onTextChanged(index, value);
-                          print(_code.length);
                           // Si tous les champs sont remplis, appeler la fonction d'action
                           if (_code.length == 6) {
                             await actionFunction();
@@ -184,18 +217,24 @@ class EmailConfirmationPageState extends State<EmailConfirmationPage> {
                     );
                   }),
                 ),
+                const SizedBox(height: 20),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    // Supprime le padding
+                    minimumSize: Size.zero,
+                  ),
+                  onPressed: reviewCode,
+                  child: Text('Renvoyer le code ?',
+                    style: TextStyle(
+                    color: Colors.white.withAlpha(200),),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
                 const SizedBox(height: 30),
                 Button(
                   text: 'Confirmer',
-                  onTap: () async {
-                    if (_code.length == 6) {
-                      await actionFunction();
-                    } else {
-                      setState(() {
-                        error = "Veuillez remplir tous les champs.";
-                      });
-                    }
-                  },
+                  onTap: actionFunction
                 ),
                 if (isLoading)
                   const Center(

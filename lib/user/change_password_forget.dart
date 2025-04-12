@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../components/background-image.dart';
 import '../components/button.dart';
-import '../components/components.dart';
 import '../components/data_class.dart';
+import '../components/input_file.dart';
 
 class ChangePasswordForget extends StatefulWidget {
   const ChangePasswordForget({super.key});
@@ -21,18 +21,28 @@ class _ChangePasswordForgetState extends State<ChangePasswordForget> {
   final confirmPasswordController = TextEditingController();
   bool isLoading = false;
   String error ="";
-  RegExp passwordRegex = RegExp(
-      r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{4,}$");
+  String? errorMessage;
+  final FocusNode focusNode1 = FocusNode();
+  final FocusNode focusNode2 = FocusNode();
+  bool obscurePassword = true;
+  bool obscureConfirmPassword = true;
 
 
   @override
-  void dispose() {
+  void initState() {
+    super.initState();
+  }
+
+
+
+  @override
+  void dispose() {;
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future actionFunction() async {
+  actionFunction() async {
     if (formKey.currentState!.validate()) {
       Map<String, dynamic> request = {
         'newPassword': passwordController.text
@@ -47,7 +57,7 @@ class _ChangePasswordForgetState extends State<ChangePasswordForget> {
           headers: {"Content-Type": "application/json","Authorization":"Bearer $token"}
       );
       final Map<String, dynamic> data = json.decode(response.body);
-      print(data);
+
       setState(() {
         isLoading = false;
       });
@@ -62,6 +72,7 @@ class _ChangePasswordForgetState extends State<ChangePasswordForget> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
 
@@ -74,100 +85,125 @@ class _ChangePasswordForgetState extends State<ChangePasswordForget> {
         Scaffold(
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 70,),
-                SizedBox(
-                  width: screenWidth*0.8,
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.white
+            child: Center(
+              child: Column(
+                children: [
+                  SizedBox(height: 70,),
+                  SizedBox(
+                    width: screenWidth*0.8,
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.white
+                          ),
+                          child: IconButton(
+                            color: Colors.white,
+                            icon: Icon(Icons.arrow_forward_ios, color: colorApp),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/inscription');
+                            },
+                          ),
                         ),
-                        child: IconButton(
-                          color: Colors.white,
-                          icon: Icon(Icons.arrow_forward_ios, color: colorApp),
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/inscription');
-                          },
-                        ),
-                      ),
-                      Spacer()
-                    ],
-                  ),
-                ),
-                SizedBox(height: 30,),
-                Text("Bienvenu sur EWERA",
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    color: Colors.white,
-                    fontSize: screenWidth * 0.06,
-                    wordSpacing: 5,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text("Connectez vous afin de gérer vos projets",
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700
-                  ),
-                ),
-                SizedBox(height: 30,),
-                Container(
-                  child: Column(
-                    children: [
-
-                      if(error != "")
-                        Text(error, style: TextStyle(
-                            color: Colors.red,
-                            fontFamily: 'Roboto',
-                            fontSize: screenWidth * 0.04
-                        ),),
-                      Form(
-                          key: formKey,
-                          child: Column(
-                            children: [
-                              EntryField(
-                                  text: "Password",
-                                  type: "password",
-                                  express: passwordRegex,
-                                  control: passwordController,
-                                  required: true,
-                                  error: "",
-                                  icon: const Icon(Icons.vpn_key_outlined)),
-
-                              EntryField(
-                                  text: "Confirmer Password",
-                                  type: "password",
-                                  express: passwordRegex,
-                                  control: confirmPasswordController,
-                                  required: true,
-                                  error: "",
-                                  icon: const Icon(Icons.vpn_key_outlined)),
-
-
-                              Button(text: 'Valider', onTap: ()async {
-                                await actionFunction();
-                                //Navigator.pushNamed(context, '/welcomeUser');
-                              },)
-                            ],
-                          )
-                      )
-                    ],
-                  ),
-                ),
-                if(isLoading )
-                  const Align(
-
-                    child: Center(
-                        child: CircularProgressIndicator()
+                        Spacer()
+                      ],
                     ),
-                  )
-              ],
+                  ),
+                  SizedBox(height: 30,),
+                  Text("Bienvenu sur EWERA",
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      color: Colors.white,
+                      fontSize: screenWidth * 0.06,
+                      wordSpacing: 5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text("Connectez vous afin de gérer vos projets",
+                    style: TextStyle(
+                        fontFamily: 'Roboto',
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700
+                    ),
+                  ),
+                  SizedBox(height: 30,),
+                  Container(
+                    child: Column(
+                      children: [
+
+                        if(error != "")
+                          Text(error, style: TextStyle(
+                              color: Colors.red,
+                              fontFamily: 'Roboto',
+                              fontSize: screenWidth * 0.04
+                          ),),
+                        Form(
+                            key: formKey,
+                            child: Column(
+                              children: [
+
+                                InputFieldPassword(
+                                  label: 'Mot de passe',
+                                  controller: passwordController,
+                                  focusNode: focusNode1,
+                                  message: '',
+                                  toggleVisibility:
+                                      () {
+                                    setState(() {
+                                      obscurePassword = !obscurePassword;
+                                    });
+                                  }, obscureText: obscurePassword,
+                                  validator: (value ) {
+                                      print('coucou $value');
+                                      if (value == null || value.isEmpty) {
+                                        return 'Le mot de passe est requis';
+                                      }
+                                      RegExp motDePasseRegExp = RegExp(
+                                        r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])[A-Za-z0-9@$!%*?&]{8,}$',
+                                      );
+                                      if (!motDePasseRegExp.hasMatch(value)) {
+                                        return 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial';
+                                      }
+                                      return null;
+                                    }
+                                  , onTap: (){},),
+
+                                InputFieldPassword(
+                                  label: 'Confirmer Mot de passe',
+                                  controller: confirmPasswordController,
+                                  onTap: (){} ,
+                                  focusNode: focusNode2,
+                                  message: '',
+                                  toggleVisibility: () {
+                                    setState(() {
+                                      obscureConfirmPassword = !obscureConfirmPassword;
+                                    });
+                                  }, obscureText: obscureConfirmPassword,
+                                  validator: (value) {
+                                    if (value != passwordController.text) {
+                                      return 'Les mots de passe ne correspondent pas';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                Button(text: 'Valider', onTap:actionFunction,)
+                              ],
+                            )
+                        )
+                      ],
+                    ),
+                  ),
+                  if(isLoading )
+                    const Align(
+
+                      child: Center(
+                          child: CircularProgressIndicator()
+                      ),
+                    )
+                ],
+              ),
             ),
           ),
         )

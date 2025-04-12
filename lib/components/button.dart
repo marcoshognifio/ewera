@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'data_class.dart';
+
 
 //ignore: must_be_immutable
 class ButtonWelcome extends StatelessWidget {
@@ -36,22 +39,25 @@ class ButtonWelcome extends StatelessWidget {
   }
 }
 
+
+
 class Button extends StatelessWidget {
   Button({super.key, required this.text, required this.onTap});
   final String text;
   final VoidCallback onTap;
 
-  TextStyle textStyle=const TextStyle(
+  TextStyle textStyle= TextStyle(
       fontFamily: 'Roboto-Regular',
       color: Colors.white,
-      fontSize: 16,
+      fontSize: screenWidth*0.044,
       fontWeight: FontWeight.bold,
       wordSpacing: 3,
       letterSpacing: 1);
   @override
   Widget build(BuildContext context) {
+
     return Padding(
-      padding: const EdgeInsets.only(top:  15.0,left: 35,right: 35),
+      padding: const EdgeInsets.only(top:15),
       child: SizedBox(
         width: screenWidth*0.8,
         height: screenHeight*0.06,

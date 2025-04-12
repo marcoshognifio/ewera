@@ -1,20 +1,16 @@
-import 'package:ewera/user/change_language.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ewera/user/infos_profit.dart';
 import '../components/appbar.dart';
-import 'change_password.dart';
+import '../components/data_class.dart';
 
 class ProfitUser extends StatelessWidget {
-  ProfitUser({super.key,required this.navigatorKey,required this.notifier,required this.appBarParent});
-  GlobalKey<NavigatorState> navigatorKey;
-  ChangeAppBar notifier;
-  Widget appBarParent;
+  ProfitUser({super.key,required});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
+        appBar: appBarWidget('Profile Utilisateur',context),
         body: SingleChildScrollView(
           child: Stack(
               children:[
@@ -25,23 +21,24 @@ class ProfitUser extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(bottom: 20),
-                          child: const Text('Paramètre du compte',
+                          margin: const EdgeInsets.only(bottom: 15),
+                          child: Text('Paramètre du compte',
                             style: TextStyle(
                                 fontFamily: 'Roboto-Regular',
                                 color: Colors.black,
-                                fontSize: 25,
+                                fontSize: screenWidth*0.05,
                                 fontWeight: FontWeight.bold
                             ),
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.only(bottom: 22),
-                          child: const Text('Faites des modifications sur votre compte',
+                          width: screenWidth*0.8,
+                          margin: const EdgeInsets.only(bottom: 15),
+                          child: Text('Faites des modifications sur votre compte',
                             style: TextStyle(
                               fontFamily: 'Roboto-Regular',
                               color: Colors.black,
-                              fontSize: 20,
+                              fontSize: screenWidth*0.05,
                             ),
                           ),
                         ),
@@ -52,47 +49,36 @@ class ProfitUser extends StatelessWidget {
                                   'Information de Profile',
                                   'Change les informations du compte',
                                   FontAwesomeIcons.user,
-                                      (){
-                                    Widget parent = notifier.appBar;
-                                    notifier.appBar = appBarWidget('Information de Profile',notifier,parent,navigatorKey);
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (context) =>const InfoProfit()
-                                        )
-                                    );
+                                  (){
+                                        Navigator.pushNamed(context, '/infoProfit');
                                   }
                               ),
                               parametreItem('Modification Mot de Passe',
                                   'Change ton mot de passe',
                                   Icons.lock,
                                   (){
-                                    Widget parent = notifier.appBar;
-                                    notifier.appBar = appBarWidget('Modification Mot de Passe',notifier,parent,navigatorKey);
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (context) =>const ChangePassword()
-                                        )
-                                    );
+                                    Navigator.pushNamed(context, '/changePassword');
                                   }
 
                               ),
-                              parametreItem('Methode de Payement', 'Ajoute ton mode de payement',Icons.credit_card, (){}),
+                              parametreItem('Methode de Payement', 'Ajoute ton mode de payement',Icons.credit_card,
+                                      (){
+                                        Navigator.pushNamed(context, '/payPage');
+                                      }
+                              ),
                               parametreItem('Localisation', 'Modifie ton lieux de livraison',Icons.location_on, (){}),
 
                               parametreItem('Langue',
                                   'Modifie la langue',
                                   FontAwesomeIcons.globe,
-                                      (){
-                                    Widget parent = notifier.appBar;
-                                    notifier.appBar = appBarWidget('Modification La Langue',notifier,parent,navigatorKey);
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (context) =>const ChangeLanguage()
-                                        )
-                                    );
+                                  (){
+                                      Navigator.pushNamed(context, '/changeLanguage');
                                   }
                               ),
-                              parametreItem('Aide', 'Condition générale,Mention légale',FontAwesomeIcons.user, (){}),
+                              parametreItem('Aide', 'Condition générale,Mention légale',FontAwesomeIcons.circleQuestion, (){}),
 
                               const Padding(
-                                padding: EdgeInsets.only(top: 30.0,bottom: 30),
+                                padding: EdgeInsets.only(top: 10.0,bottom: 30),
                                 child: Text('from\nH-KIM',style: TextStyle(fontFamily: 'Roboto-Regular',),),
                               )
                             ],
@@ -114,24 +100,27 @@ class ProfitUser extends StatelessWidget {
 
     return  ListTile(
       leading: Padding(
-        padding: const EdgeInsets.only(bottom: 10,right:15.0),
-        child: Icon(icon, size: 25,color: Colors.black,),
+        padding: EdgeInsets.only(bottom: 10),
+        child: Icon(icon, size: screenWidth*0.05,color: Colors.black,),
       ),
-      title: Text(title,style: const TextStyle(
+      title: Text(title,style: TextStyle(
         fontFamily: 'Roboto-Regular',
         fontWeight: FontWeight.bold,
-        fontSize: 17
+        fontSize: screenWidth*0.04
       ),),
       subtitle: Container(
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.only(bottom: 5),
         decoration: const BoxDecoration(
           border:  Border(bottom: BorderSide(color: Colors.grey))
         ),
-        child: Text(detail,style: const TextStyle(
-            fontFamily: 'Roboto-Regular',
-            fontSize: 15,
-            color: Colors.grey
-        ),),
+        child: Padding(
+          padding: const EdgeInsets.only(top:10),
+          child: Text(detail,style: TextStyle(
+              fontFamily: 'Roboto-Regular',
+              fontSize: screenWidth*0.038,
+              color: Colors.grey
+          ),),
+        ),
       ),
       onTap: onTap,
     );

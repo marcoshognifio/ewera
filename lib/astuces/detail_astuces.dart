@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ewera/components/data_class.dart';
 
+import '../components/appbar.dart';
+import '../components/button.dart';
 import '../components/components.dart';
 
 class DetailAstuces extends StatefulWidget {
@@ -17,10 +19,16 @@ class _DetailAstucesState extends State<DetailAstuces> {
   List<Widget> listPagesWidget = [];
   int current = 0;
 
+
+  actionFunction()async {
+    Navigator.pushNamed(context, '/abonnement');
+  }
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
+        appBar: appBarWidget("Informations sur l'astuce",context),
       body: FutureBuilder<List<dynamic>>(
         future: DatabaseHelper().getRecipesAll(widget.astuce['id'] as int), builder: (BuildContext context,snapshot) {
 
@@ -107,12 +115,10 @@ class _DetailAstucesState extends State<DetailAstuces> {
     List<Widget> result = [];
     for(int i=0,c=listRecipes.length;i<c;i++){
       result.add(
-          Container(
-            child: Column(
+          Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: columnWidget(context, listRecipes[i],i+1)),
-            ),
-          );
+            );
     }
     return result;
   }
@@ -141,14 +147,18 @@ class _DetailAstucesState extends State<DetailAstuces> {
           ),
         )
     );
-    result.add(
-        Padding(
-          padding: const EdgeInsets.only(left:20),
-          child: Text(astuce['ingredients'],
-              style:t
-          ),
-        )
-    );
+
+    List list =  (astuce['ingredients'] as String).split('#').where((e) => e.isNotEmpty).toList();
+    for(int i=0,a=list.length;i<a;i++){
+      result.add(
+          ListTile(
+            contentPadding: const EdgeInsets.only(left: 0),
+            leading: Icon(Icons.circle, size: 10,color: colorApp,),
+            title: Text(list[i]),
+          )
+      );
+    }
+
 
     result.add(
         SizedBox(height: 20,)
@@ -168,15 +178,23 @@ class _DetailAstucesState extends State<DetailAstuces> {
         )
     );
 
-    List list =  (astuce['instructions'] as String).split('#').where((e) => e.isNotEmpty).toList();
+    list =  (astuce['instructions'] as String).split('#').where((e) => e.isNotEmpty).toList();
     for(int i=0,a=list.length;i<a;i++){
       result.add(
           ListTile(
-            leading: Icon(Icons.brightness_1, size: 10,color: colorApp,),
+            leading: Icon(Icons.circle, size: 10,color: colorApp,),
             title: Text(list[i],style: t,),
           )
       );
     }
+
+
+    result.add(Center(
+      child: Button(
+        text: 'En Savoir plus',
+        onTap: actionFunction,
+      ),
+    ));
 
     return result;
   }

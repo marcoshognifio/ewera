@@ -1,120 +1,75 @@
+import 'package:ewera/user/subscription.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ewera/user/profit_user.dart';
 import '../astuces/astuces.dart';
 import '../components/appbar.dart';
 import '../components/components.dart';
 import '../components/data_class.dart';
 import '../plantes/plantes.dart';
+import 'screen_camera/screen_camera.dart';
 import '../tisanes/tisanes.dart';
 import 'accueil.dart';
-
 class UserSlideWidget extends StatefulWidget {
   UserSlideWidget({super.key});
   CounterPage  counterPage = CounterPage(0);
-  final navigatorKey = GlobalKey<NavigatorState>();
-  ChangeAppBar notifier = ChangeAppBar(Container());
-
   @override
   State<UserSlideWidget> createState() => _UserSlideWidgetState();
 }
 
 class _UserSlideWidgetState extends State<UserSlideWidget> {
 
+  final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
-    widget.notifier = ChangeAppBar(appBarParent());
     super.initState();
   }
-
-
-
 
   final controller = PageController();
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppbarWidget(
-        notifier: widget.notifier
-      ),
-      body: Navigator(
-        key: widget.navigatorKey,
-        initialRoute: '/',
-        onGenerateRoute: (settings){
-          switch(settings.name){
-            case '/':
-              return MaterialPageRoute(builder: (context) => const WelcomeUser());
-            case '/trees':
-
-              return MaterialPageRoute(builder: (context) =>const Trees());
-
-            case '/astuces':
-              return MaterialPageRoute(builder: (context) =>const Astuces());
-
-            case '/tisanes':
-              return MaterialPageRoute(builder: (context) =>const Tisanes());
-
-            case '/profileUser':
-
-              Widget parent = widget.notifier.appBar;
-              setState(() {
-                widget.notifier.appBar = appBarWidget('Profile Utilisateur',widget.notifier,parent,widget.navigatorKey);
-              });
-              return MaterialPageRoute(builder: (context) =>ProfitUser(navigatorKey: widget.navigatorKey, notifier: widget.notifier, appBarParent: parent,));
-          }
-          return null;
-        },
+      appBar: appBarParent(context),
+      body: IndexedStack(
+        index: widget.counterPage.value,
+        children: [
+          const WelcomeUser(),
+          Trees(contextParent: context,),
+          const ScreenCamera(),
+          Astuces(contextParent: context,),
+          Tisanes(contextParent: context,),
+        ],
       ),
       bottomNavigationBar: navbar(),
     );
   }
 
-  Widget appBarParent(){
-    return AppBar(
-      elevation: 10,
-      backgroundColor: Colors.white,
-      leading:  Center(child: Image.asset('assets/images/Ewera.png',width: 70,color: colorApp,)),
-      actions: [
-        IconButton(
-          color: Colors.white,
-          icon: const Icon(Icons.account_circle_rounded,size: 50,color:Color(0xFF236718),),
-          onPressed: (){
-            widget.navigatorKey.currentState?.pushNamed('/profileUser');
-          },
-        ),
-      ],
-
-    );
-  }
-
-
   Widget navbar() {
     return Container(
+      height: 120,
       decoration: const BoxDecoration(
           boxShadow: [
             BoxShadow(
               color: Colors.black12,
               offset: Offset(
-                3.0,
-                3.0,
+                2.0,
+                2.0,
               ), //Offset
-              blurRadius: 3.0,
-              spreadRadius: 2.0,
+              blurRadius: 2.0,
+              spreadRadius: 0.0,
             ), //BoxShadow
             BoxShadow(
-              color: Color(0xff363636),
+              color: Colors.grey,
               offset: Offset(0.0, 0.0),
-              blurRadius: 3.0,
+              blurRadius: 2.0,
               spreadRadius: 0.0,
             )
           ]
       ),
       child: BottomNavigationBar(
           currentIndex: widget.counterPage.value,
-          onTap: (int newIndex){
+          onTap: (int newIndex) {
             setState(() {
               widget.counterPage.value = newIndex;
             });
@@ -123,14 +78,20 @@ class _UserSlideWidgetState extends State<UserSlideWidget> {
           elevation: 10,
           iconSize: 25,
           unselectedItemColor: const Color(0xFF4D514D),
-          unselectedLabelStyle: const TextStyle(fontFamily: 'Roboto-Regular',color: Colors.black,fontSize: 15,fontWeight: FontWeight.w700),
-          selectedLabelStyle: TextStyle(fontFamily: 'Roboto-Regular',color:colorApp ,fontSize: 15,fontWeight: FontWeight.w700) ,
+          unselectedLabelStyle: const TextStyle(fontFamily: 'Roboto-Regular',
+              color: Colors.black,
+              fontSize: 10,
+              fontWeight: FontWeight.w300),
+          selectedLabelStyle: TextStyle(fontFamily: 'Roboto-Regular',
+              color: colorApp,
+              fontSize: 10,
+              fontWeight: FontWeight.w300),
           selectedItemColor: colorApp,
           type: BottomNavigationBarType.fixed,
-          items:  [
+          items: [
             BottomNavigationBarItem(
                 activeIcon: GradientIcon(icon: Icons.home_filled),
-                icon: const Icon(Icons.home_filled),// Icon(),
+                icon: const Icon(Icons.home_filled), // Icon(),
                 label: 'Accueil'
             ),
 
@@ -142,10 +103,29 @@ class _UserSlideWidgetState extends State<UserSlideWidget> {
 
             BottomNavigationBarItem(
               label: '',
-              activeIcon: GradientIcon(
-                icon: Icons.center_focus_weak_rounded,
+              activeIcon: Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  gradient: LinearGradient(
+                    colors: listColor,
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Icon(
+                  Icons.center_focus_strong_rounded, color: Colors.white,),
               ),
-              icon: const Icon(Icons.center_focus_weak_rounded),
+              icon: Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Icon(
+                  Icons.center_focus_strong_rounded),
+              ),
             ),
 
             BottomNavigationBarItem(
@@ -155,7 +135,7 @@ class _UserSlideWidgetState extends State<UserSlideWidget> {
             ),
 
             BottomNavigationBarItem(
-                activeIcon:GradientIcon(icon: FontAwesomeIcons.mugHot,) ,
+                activeIcon: GradientIcon(icon: FontAwesomeIcons.mugHot,),
                 icon: const Icon(FontAwesomeIcons.mugHot),
                 label: 'Tisanes'
             ),
@@ -165,19 +145,21 @@ class _UserSlideWidgetState extends State<UserSlideWidget> {
   }
 
 
-
-  void viewPageWidget(){
-    switch (widget.counterPage.value) {
-      case 0: widget.navigatorKey.currentState?.pushNamed('/');
-      case 1: widget.navigatorKey.currentState?.pushNamed('/trees');
-      case 2: widget.navigatorKey.currentState?.pushNamed('/trees');
-      case 3: widget.navigatorKey.currentState?.pushNamed('/astuces');
-      case 4: widget.navigatorKey.currentState?.pushNamed('/tisanes');
-    }
+  void viewPageWidget() {
+    setState(() {
+      widget.counterPage.value = widget.counterPage.value;
+    });
   }
 }
 
 
-
+class MyFloatingActionButtonLocation extends FloatingActionButtonLocation {
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final double x = (scaffoldGeometry.scaffoldSize.width - 50) / 2; // Centré horizontalement
+    final double y = scaffoldGeometry.scaffoldSize.height - 80; // Position verticale (ajustez selon votre besoin)
+    return Offset(x, y); // Positionnement absolu
+  }
+}
 
 

@@ -4,10 +4,10 @@ import 'package:ewera/components/button.dart';
 import '../components/components.dart';
 import 'package:flutter/rendering.dart';
 import '../components/data_class.dart';
-import 'infos_plante.dart';
 
 class Trees extends StatefulWidget {
-  const Trees({super.key});
+  Trees({super.key,required this.contextParent});
+  BuildContext contextParent;
 
   @override
   State<Trees> createState() => _TreesState();
@@ -95,69 +95,73 @@ class _TreesState extends State<Trees> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
-    return Navigator(
-        onGenerateRoute: (RouteSettings settings) {
-          return MaterialPageRoute(
-            builder: (context){
-              return FutureBuilder<List<dynamic>>(
-                future: DatabaseHelper().getPlantsAll(),
-                builder: (context, snapshot) {
+    return PopScope(
+      canPop: true,
+      child: Navigator(
 
-                  if(snapshot.hasData){
-
-                    return ValueListenableBuilder(
-                        valueListenable: listPlantsNotifier,
-                        builder: (context,list, child){
-
-                          if(listPlants.isNotEmpty){
-                            groupTree = Group().getGroupList(listPlants);
-
-                            _items = groupTree.take(5).toList();
-                            return SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 300),
-                                    height: _isSearchVisible ? 80.0 : 0.0,
-                                    curve: Curves.easeInOut,
-                                    child: _isSearchVisible
-                                        ? Padding(
-                                      padding: const EdgeInsets.only(bottom: 15.0,top: 20),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          EntrySearch(text: 'Rechecher une plante',control: plantController,formKey: form, onTap: searchAction),
-                                        ],
-                                      ),
-                                    ): null,
-                                  ),
-                                  SizedBox(
-                                    child: Column(
-                                      children: columnItemWidget(_items, context),
+          onGenerateRoute: (RouteSettings settings) {
+            return MaterialPageRoute(
+              builder: (context){
+                return FutureBuilder<List<dynamic>>(
+                  future: DatabaseHelper().getPlantsAll(),
+                  builder: (context, snapshot) {
+      
+                    if(snapshot.hasData){
+      
+                      return ValueListenableBuilder(
+                          valueListenable: listPlantsNotifier,
+                          builder: (context,list, child){
+      
+                            if(listPlants.isNotEmpty){
+                              groupTree = Group().getGroupList(listPlants);
+      
+                              _items = groupTree.take(5).toList();
+                              return SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    AnimatedContainer(
+                                      duration: const Duration(milliseconds: 00),
+                                      height: _isSearchVisible ? 80.0 : 0.0,
+                                      curve: Curves.easeInOut,
+                                      child: _isSearchVisible
+                                          ? Padding(
+                                        padding: const EdgeInsets.only(bottom: 15.0,top: 20),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            EntrySearch(text: 'Rechecher une plante',control: plantController,formKey: form, onTap: searchAction),
+                                          ],
+                                        ),
+                                      ): null,
                                     ),
-                                  )
-                                ],
-                              ),
-                            );
+                                    SizedBox(
+                                      child: Column(
+                                        children: columnItemWidget(_items, context),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              );
+                            }
+                            else {
+                              return emptyPage("Aucune transaction vers un sous projet n'a été ajoutée", Container());
+                            }
+      
                           }
-                          else {
-                            return emptyPage("Aucune transaction vers un sous projet n'a été ajoutée", Container());
-                          }
-
-                        }
-                    );
-                  }
-                  else {
-                    return SizedBox(
-                        width: 100,
-                        height: 100,
-                        child: Center(child: const CircularProgressIndicator()));
-                  }
-                },
-              );
-            }
-          );
-        }
+                      );
+                    }
+                    else {
+                      return SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: Center(child: const CircularProgressIndicator()));
+                    }
+                  },
+                );
+              }
+            );
+          }
+      ),
     );
   }
 
@@ -267,18 +271,8 @@ class _TreesState extends State<Trees> {
                 ),
                 ButtonIcon(
                   onTap: (){
-                    Navigator.of(context).push(
-                        PageRouteBuilder(
-                            transitionDuration: const Duration(milliseconds: 500),
-                            pageBuilder:(context, animation, secondAnimation)=> DetailTree(tree: tree),
-                            transitionsBuilder: (context, animation, secondAnimation,child) {
-                              var begin=const Offset(1.0, 0.0);
-                              var end=const Offset(0.0, 0.0);
-                              var tween=Tween(begin: begin,end:end);
-                              return  SlideTransition(position: animation.drive((tween)),child: child);
-                            }
-                        )
-                    );
+                    FocusScope.of(context).unfocus();
+                    Navigator.of(widget.contextParent).pushNamed('/infoTree',arguments: tree);
                   },
                   icon:  const Icon(Icons.arrow_forward,color: Colors.white,),
                   size: 40,

@@ -7,7 +7,8 @@ import '../components/data_class.dart';
 import 'package:flutter/rendering.dart';
 
 class Astuces extends StatefulWidget {
-  const Astuces({super.key});
+  Astuces({super.key,required this.contextParent});
+  BuildContext contextParent;
 
   @override
   State<Astuces> createState() => _AstucesState();
@@ -19,6 +20,7 @@ class _AstucesState extends State<Astuces> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   bool _isSearchVisible = true;
+  final FocusNode _focusNode = FocusNode();
   final form = GlobalKey<FormState>();
   final astuceController = TextEditingController();
   List<List<Map>> _items = [];
@@ -83,7 +85,7 @@ class _AstucesState extends State<Astuces> {
 
   Future searchAction() async{
     if (form.currentState!.validate()) {
-      await DatabaseHelper().searchPlants(astuceController.text);
+      await DatabaseHelper().searchAstuces(astuceController.text);
     }
   }
 
@@ -93,69 +95,74 @@ class _AstucesState extends State<Astuces> {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
 
-    return Navigator(
-        onGenerateRoute: (RouteSettings settings) {
-          return MaterialPageRoute(
-              builder: (context){
-                return FutureBuilder<List<dynamic>>(
-                    future: DatabaseHelper().getAstucesAll(),
-                    builder: (context,snapshot) {
+    return PopScope(
+      canPop: true,
+      child: Navigator(
+          onGenerateRoute: (RouteSettings settings) {
+            return MaterialPageRoute(
+                builder: (context){
+                  return FutureBuilder<List<dynamic>>(
+                      future: DatabaseHelper().getAstucesAll(),
+                      builder: (context,snapshot) {
 
-                      if(snapshot.hasData){
+                        if(snapshot.hasData){
 
-                        return ValueListenableBuilder(
-                            valueListenable: listAstucesNotifier,
-                            builder: (context,list,child){
+                          return ValueListenableBuilder(
+                              valueListenable: listAstucesNotifier,
+                              builder: (context,list,child){
 
-                              if(listAstuces.isNotEmpty){
+                                if(listAstuces.isNotEmpty){
 
-                                groupAstuces = Group().getGroupList(listAstuces);
+                                  groupAstuces = Group().getGroupList(listAstuces);
 
-                                _items = groupAstuces.take(5).toList();
+                                  _items = groupAstuces.take(5).toList();
 
-                                return Column(
-                                  children: [
-                                    AnimatedContainer(
-                                      duration: const Duration(milliseconds: 300),
-                                      height: _isSearchVisible ? 80.0 : 0.0,
-                                      curve: Curves.easeInOut,
-                                      child: _isSearchVisible
-                                          ? Padding(
-                                        padding: const EdgeInsets.only(bottom: 15.0,top: 20),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            EntrySearch(text: 'Rechecher une Astuce', formKey: form, control: astuceController, onTap: searchAction,),
-                                          ],
+                                  return SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        AnimatedContainer(
+                                          duration: const Duration(milliseconds: 300),
+                                          height: _isSearchVisible ? 80.0 : 0.0,
+                                          curve: Curves.easeInOut,
+                                          child: _isSearchVisible
+                                              ? Padding(
+                                            padding: const EdgeInsets.only(bottom: 15.0,top: 20),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                EntrySearch(text: 'Rechecher une Astuce', formKey: form, control: astuceController, onTap: searchAction,),
+                                              ],
+                                            ),
+                                          ): null,
                                         ),
-                                      ): null,
+                                        SizedBox(
+                                          child: Column(
+                                            children: columnItemWidget(_items, context),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    SizedBox(
-                                      child: Column(
-                                        children: columnItemWidget(_items, context),
-                                      ),
-                                    )
-                                  ],
-                                );
+                                  );
+                                }
+                                else {
+                                  return  emptyPage("Aucune transaction vers un sous projet n'a été ajoutée", Container());
+                                }
                               }
-                              else {
-                                return  emptyPage("Aucune transaction vers un sous projet n'a été ajoutée", Container());
-                              }
-                            }
-                        );
+                          );
 
+                        }
+                        else {
+                          return SizedBox(
+                              width: 100,
+                              height: 100,
+                              child: Center(child: const CircularProgressIndicator()));
+                        }
                       }
-                      else {
-                        return SizedBox(
-                            width: 100,
-                            height: 100,
-                            child: Center(child: const CircularProgressIndicator()));
-                      }
-                    }
-                );
-              }
-          );
-        }
+                  );
+                }
+            );
+          }
+      ),
     );
   }
 
@@ -174,7 +181,7 @@ class _AstucesState extends State<Astuces> {
   Widget lisTreeWidget(List list,BuildContext context){
 
     return Container(
-      height: 300,
+      height: 220,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context,index)=>Column(
@@ -251,18 +258,8 @@ class _AstucesState extends State<Astuces> {
                 ),
                 ButtonIcon(
                   onTap: (){
-                    Navigator.of(context).push(
-                        PageRouteBuilder(
-                            transitionDuration: const Duration(milliseconds: 500),
-                            pageBuilder:(context, animation, secondAnimation)=> DetailAstuces(astuce: astuce),
-                            transitionsBuilder: (context, animation, secondAnimation,child) {
-                              var begin=const Offset(1.0, 0.0);
-                              var end=const Offset(0.0, 0.0);
-                              var tween=Tween(begin: begin,end:end);
-                              return  SlideTransition(position: animation.drive((tween)),child: child);
-                            }
-                        )
-                    );
+                    FocusScope.of(context).unfocus();
+                    Navigator.of(widget.contextParent).pushNamed('/infoAstuce',arguments: astuce);
                   },
                   icon:  const Icon(Icons.arrow_forward,color: Colors.white,),
                   size: 40,

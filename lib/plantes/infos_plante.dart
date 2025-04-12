@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:ewera/components/data_class.dart';
+import '../components/appbar.dart';
 import '../components/button.dart';
 
-class DetailTree extends StatelessWidget {
+class DetailTree extends StatefulWidget {
   const DetailTree({super.key,required this.tree});
   final Map tree;
+
+  @override
+  State<DetailTree> createState() => _DetailTreeState();
+}
+
+class _DetailTreeState extends State<DetailTree> {
+
+
+  actionFunction()async {
+    Navigator.pushNamed(context, '/abonnement');
+  }
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
+      appBar: appBarWidget('Informations sur la plante',context),
       body: CustomScrollView(
           slivers: [
             SliverPersistentHeader(
-                delegate: DetailSliver(tree: tree, expandedHeight: 350, roundedContainerHeight: 30,)
+                delegate: DetailSliver(tree: widget.tree, expandedHeight: 350, roundedContainerHeight: 30,)
             ),
             SliverToBoxAdapter(
               child: Container(
@@ -41,7 +55,7 @@ class DetailTree extends StatelessWidget {
 
     result.add(Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
-      child: Text(tree['name'],
+      child: Text(widget.tree['name'],
           style: const TextStyle(
               fontFamily: 'Roboto-Regular',
               color: Colors.black,
@@ -55,13 +69,13 @@ class DetailTree extends StatelessWidget {
     result.add(
       Padding(
         padding: const EdgeInsets.only(left:10, bottom: 10.0),
-        child: Text(tree['description'],
+        child: Text(widget.tree['description'],
             style:t
         ),
       )
     );
 
-    List<String> list = (tree['description'] as String).split('#').where((e) => e.isNotEmpty).toList();
+    List<String> list = (widget.tree['description'] as String).split('#').where((e) => e.isNotEmpty).toList();
     for(int i=0,a=list.length;i<a;i++){
       result.add(
         ListTile(
@@ -70,10 +84,13 @@ class DetailTree extends StatelessWidget {
         )
       );
     }
-    
-    result.add(Button(
+
+    result.add(Center(
+      child: Button(
         text: 'En Savoir plus',
-        onTap: () { Navigator.pushNamed(context, '/welcomeUser'); },));
+        onTap: actionFunction,
+      ),
+    ));
 
     return result;
   }

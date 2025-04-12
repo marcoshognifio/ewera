@@ -8,7 +8,8 @@ import 'infos_tisane.dart';
 import 'package:flutter/rendering.dart';
 
 class Tisanes extends StatefulWidget {
-  const Tisanes({super.key});
+  Tisanes({super.key,required this.contextParent});
+  BuildContext contextParent;
 
   @override
   State<Tisanes> createState() => _TisanesState();
@@ -94,67 +95,70 @@ class _TisanesState extends State<Tisanes> {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
 
-    return Navigator(
-        onGenerateRoute: (RouteSettings settings) {
-          return MaterialPageRoute(
-              builder: (context){
-                return FutureBuilder<List<dynamic>>(
-                  future: DatabaseHelper().getTisanesAll(),
-                  builder: (context,snapshot) {
+    return PopScope(
+      canPop: true,
+      child: Navigator(
+          onGenerateRoute: (RouteSettings settings) {
+            return MaterialPageRoute(
+                builder: (context){
+                  return FutureBuilder<List<dynamic>>(
+                    future: DatabaseHelper().getTisanesAll(),
+                    builder: (context,snapshot) {
 
-                    if(snapshot.hasData){
+                      if(snapshot.hasData){
 
-                      return ValueListenableBuilder(
-                          valueListenable: listTisanesNotifier,
-                          builder: (context,list,child){
+                        return ValueListenableBuilder(
+                            valueListenable: listTisanesNotifier,
+                            builder: (context,list,child){
 
-                            if(listTisanes.isNotEmpty){
-                              groupTisanes = Group().getGroupList(listTisanes);
-                              _items = groupTisanes.take(5).toList();
-                              return Column(
-                                children: [
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 300),
-                                    height: _isSearchVisible ? 80.0 : 0.0,
-                                    curve: Curves.easeInOut,
-                                    child: _isSearchVisible
-                                        ? Padding(
-                                      padding: const EdgeInsets.only(bottom: 15.0,top: 20),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          EntrySearch(text: 'Rechecher une Tisane', formKey: form, control: tisaneController, onTap: searchAction,),
-                                        ],
-                                      ),
-                                    ): null,
-                                  ),
-                                  SizedBox(
-                                    child: Column(
-                                      children: columnItemWidget(_items, context),
+                              if(listTisanes.isNotEmpty){
+                                groupTisanes = Group().getGroupList(listTisanes);
+                                _items = groupTisanes.take(5).toList();
+                                return Column(
+                                  children: [
+                                    AnimatedContainer(
+                                      duration: const Duration(milliseconds: 300),
+                                      height: _isSearchVisible ? 80.0 : 0.0,
+                                      curve: Curves.easeInOut,
+                                      child: _isSearchVisible
+                                          ? Padding(
+                                        padding: const EdgeInsets.only(bottom: 15.0,top: 20),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            EntrySearch(text: 'Rechecher une Tisane', formKey: form, control: tisaneController, onTap: searchAction,),
+                                          ],
+                                        ),
+                                      ): null,
                                     ),
-                                  )
+                                    SizedBox(
+                                      child: Column(
+                                        children: columnItemWidget(_items, context),
+                                      ),
+                                    )
 
-                                ],
-                              );
+                                  ],
+                                );
+                              }
+                              else {
+                                return  emptyPage("Vide", Container());
+                              }
                             }
-                            else {
-                              return  emptyPage("Vide", Container());
-                            }
-                          }
-                      );
+                        );
 
+                      }
+                      else {
+                        return SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: Center(child: const CircularProgressIndicator()));
+                      }
                     }
-                    else {
-                      return SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: Center(child: const CircularProgressIndicator()));
-                    }
-                  }
-                );
-              }
-          );
-        }
+                  );
+                }
+            );
+          }
+      ),
     );
   }
 
@@ -195,7 +199,7 @@ class _TisanesState extends State<Tisanes> {
   Widget tisaneWidget(Map<dynamic,dynamic> tisane , BuildContext context){
 
     List photos = tisane['photo'];
-    tisane['price'] = formatter.format(tisane['price']);
+    //tisane['price'] = formatter.format(tisane['price']);
     Random random = Random();
     int randomIndex = random.nextInt(photos.length);
     tisane['image'] = '$url/${photos[randomIndex]}';
@@ -264,18 +268,9 @@ class _TisanesState extends State<Tisanes> {
                 ),
                 ButtonIcon(
                   onTap: (){
-                    Navigator.of(context).push(
-                        PageRouteBuilder(
-                            transitionDuration: const Duration(milliseconds: 500),
-                            pageBuilder:(context, animation, secondAnimation)=> DetailTisane(tisane: tisane),
-                            transitionsBuilder: (context, animation, secondAnimation,child) {
-                              var begin=const Offset(1.0, 0.0);
-                              var end=const Offset(0.0, 0.0);
-                              var tween=Tween(begin: begin,end:end);
-                              return  SlideTransition(position: animation.drive((tween)),child: child);
-                            }
-                        )
-                    );
+                    FocusScope.of(context).unfocus();
+                    Navigator.of(widget.contextParent).pushNamed('/infoTisane',arguments: tisane);
+
                   },
                   icon:  const Icon(Icons.arrow_forward,color: Colors.white,),
                   size: 40,
